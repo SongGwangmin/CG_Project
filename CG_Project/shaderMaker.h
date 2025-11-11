@@ -4,7 +4,7 @@
 #include <glew.h>
 #include "filetobuf.h"
 
-GLint width = 900, height = 900;
+GLint width = 1500, height = 800;
 GLuint shaderProgramID;
 GLuint vertexShader;
 GLuint fragmentShader;

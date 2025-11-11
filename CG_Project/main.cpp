@@ -18,9 +18,9 @@ void main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 깊이 버퍼 추가
-	glutInitWindowPosition(100, 100);
+	glutInitWindowPosition(100, 50);
 	glutInitWindowSize(width, height);
-	glutCreateWindow("Tesk_19");
+	glutCreateWindow("ComputerGraphics_Prject");
 
 	glewExperimental = GL_TRUE;
 	glewInit();
