@@ -133,10 +133,12 @@
   <ItemGroup>
     <ClCompile Include="filetobuf.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filetobuf.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="shaderMaker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
