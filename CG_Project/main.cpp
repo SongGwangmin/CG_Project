@@ -12,7 +12,7 @@
 #include "filetobuf.h"
 #include "shaderMaker.h"
 #include "Object.h"
-
+// main-copy
 //void make_vertexShaders();
 //void make_fragmentShaders();
 //GLuint make_shaderProgram();
