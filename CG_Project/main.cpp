@@ -1,6 +1,6 @@
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-#include <GL/freeglut_ext.h> 
+#include <glew.h>
+#include <freeglut.h>
+#include <freeglut_ext.h> 
 
 #include <iostream> // ·Î±× ¿ë
 #include <vector>
