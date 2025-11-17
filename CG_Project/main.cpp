@@ -12,6 +12,7 @@
 #include "filetobuf.h"
 #include "shaderMaker.h"
 #include "Object.h"
+#include "sphere_obj_load.h"
 
 //void make_vertexShaders();
 //void make_fragmentShaders();
@@ -24,7 +25,9 @@ void setupBuffers();
 std::vector<float> vertices;
 GLuint VAO, VBO;
 
-void main(int argc, char** argv)
+Mesh gSphere;  // 구 메쉬
+
+int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 깊이 버퍼 추가
@@ -35,12 +38,23 @@ void main(int argc, char** argv)
 	glewExperimental = GL_TRUE;
 	glewInit();
 
+	// 콜백 선언
+	glutDisplayFunc(drawScene);
+	glutReshapeFunc(Reshape);
+
 	glEnable(GL_DEPTH_TEST); // 깊이 테스트 활성화
 
 
 	make_vertexShaders();
 	make_fragmentShaders();
 	shaderProgramID = make_shaderProgram();
+
+	// obj 파일 로드
+	if (!LoadOBJ_PosNorm_Interleaved("sphere.obj", gSphere))
+	{
+		std::cerr << "Failed to load sphere.obj\n";
+		return 1;
+	}
 
 	// 버퍼 세팅
 	setupBuffers();
@@ -53,12 +67,24 @@ void main(int argc, char** argv)
 		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // 오른쪽 정점 (파랑)
 	};
 
-	// 콜백 선언
-	glutDisplayFunc(drawScene);
-	glutReshapeFunc(Reshape);
-
 	// 메인 루프 진입
 	glutMainLoop();
+
+	return 0;
+}
+
+// 구 그리는 함수
+void DrawSphere(const Mesh& mesh, GLuint shaderProgram, const glm::mat4& model, const glm::vec3& color)
+{
+	GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
+
+	GLint objLoc = glGetUniformLocation(shaderProgram, "objectColor");
+	glUniform3fv(objLoc, 1, &color[0]);
+
+	glBindVertexArray(mesh.vao);
+	glDrawArrays(GL_TRIANGLES, 0, mesh.count);
+	glBindVertexArray(0);
 }
 
 GLvoid drawScene()
@@ -90,6 +116,11 @@ GLvoid drawScene()
 
 	Player player;  // () 제거
 	Object* obj = &player;
+
+	// 중심 구
+	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
+	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
+	DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
 
 
 	// VBO 데이터 바인딩
