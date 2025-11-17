@@ -92,6 +92,26 @@ GLvoid drawScene()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// 셰이더 사용
+	glUseProgram(shaderProgramID);
+
+	GLint lightOnLoc = glGetUniformLocation(shaderProgramID, "lightOn");
+	glUniform1i(lightOnLoc, 1); // 조명 켜기
+
+	// 조명/객체 색 설정
+	GLint lightLoc = glGetUniformLocation(shaderProgramID, "lightColor");
+	GLint objLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+
+	glm::vec3 lightBasePos(3.0f, 0.0f, 2.5f);
+	//glm::mat4 lightRotate = glm::rotate(glm::mat4(1.0f), glm::radians(angleCenterY), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 lightPos = glm::vec3(glm::vec4(lightBasePos, 1.0f));
+
+	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");  // 조명 위치
+	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // 카메라 위치
+	glUniform3f(lightLoc, 1.0f, 1.0f, 1.0f);      // 흰 조명
+	glUniform3f(objLoc, 1.0f, 0.7f, 0.7f);      // 오브젝트 색
+	glUniform3f(uLightPos, lightPos.x, lightPos.y, lightPos.z); // 조명 위치
+
 	GLint viewLoc = glGetUniformLocation(shaderProgramID, "view");
 	GLint projLoc = glGetUniformLocation(shaderProgramID, "projection");
 	GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
@@ -99,6 +119,7 @@ GLvoid drawScene()
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // 카메라 위치 전달
 
 	glm::mat4 vTransform = glm::mat4(1.0f);
 	vTransform = glm::lookAt(cameraPos, cameraDirection, cameraUp);
@@ -110,9 +131,6 @@ GLvoid drawScene()
 	glm::mat4 pTransform = glm::mat4(1.0f);
 	pTransform = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]);
-
-	// 셰이더 사용
-	glUseProgram(shaderProgramID);
 
 	Player player;  // () 제거
 	Object* obj = &player;
