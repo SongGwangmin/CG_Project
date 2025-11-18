@@ -121,6 +121,7 @@ GLvoid drawScene()
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // 카메라 위치 전달
 
+	// x축 기준 -40도 회전 ( 위에서 아래로 보는 각도 )
 	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	cameraPos = glm::vec3(rotation * glm::vec4(cameraPos - cameraDirection, 1.0f)) + cameraDirection;
 
