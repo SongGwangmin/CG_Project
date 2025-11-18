@@ -91,7 +91,7 @@ void DrawSphere(const Mesh& mesh, GLuint shaderProgram, const glm::mat4& model, 
 
 GLvoid drawScene()
 {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// ÏÖ∞Ïù¥Îçî ÏÇ¨Ïö©
@@ -105,8 +105,8 @@ GLvoid drawScene()
 	GLint objLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 
 	glm::vec3 lightBasePos(3.0f, 0.0f, 2.5f);
-	//glm::mat4 lightRotate = glm::rotate(glm::mat4(1.0f), glm::radians(angleCenterY), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::vec3 lightPos = glm::vec3(glm::vec4(lightBasePos, 1.0f));
+	glm::mat4 lightRotate = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::vec3 lightPos = glm::vec3(lightRotate* glm::vec4(lightBasePos, 1.0f));
 
 	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");  // Ï°∞Î™Ö ÏúÑÏπò
 	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // Ïπ¥Î©îÎùº ÏúÑÏπò
@@ -118,10 +118,14 @@ GLvoid drawScene()
 	GLint projLoc = glGetUniformLocation(shaderProgramID, "projection");
 	GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
 
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
 	glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // Ïπ¥Î©îÎùº ÏúÑÏπò Ï†ÑÎã¨
+
+	// x√‡ ±‚¡ÿ -40µµ »∏¿¸ ( ¿ßø°º≠ æ∆∑°∑Œ ∫∏¥¬ ∞¢µµ )
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	cameraPos = glm::vec3(rotation * glm::vec4(cameraPos - cameraDirection, 1.0f)) + cameraDirection;
 
 	glm::mat4 vTransform = glm::mat4(1.0f);
 	vTransform = glm::lookAt(cameraPos, cameraDirection, cameraUp);
