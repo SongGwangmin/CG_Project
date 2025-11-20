@@ -2,7 +2,7 @@
 #include <freeglut.h>
 #include <freeglut_ext.h> 
 
-#include <iostream> // Î°úÍ∑∏ ??
+#include <iostream>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -23,16 +23,16 @@ GLvoid drawScene();
 GLvoid Reshape(int w, int h);
 void setupBuffers();
 
-// ?ÑÏó≠ Î≥Ä??
+// ?
 std::vector<float> vertices;
 GLuint VAO, VBO;
 
-Mesh gSphere;  // Íµ?Î©îÏâ¨
+Mesh gSphere;  // sphere obj
 
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // ÍπäÏù¥ Î≤ÑÌçº Ï∂îÍ?
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // using depth buffer
 	glutInitWindowPosition(100, 50);
 	glutInitWindowSize(width, height);
 	glutCreateWindow("ComputerGraphics_Prject");
@@ -40,25 +40,25 @@ int main(int argc, char** argv)
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	// ÏΩúÎ∞± ?†Ïñ∏
+	// callback 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
 
-	glEnable(GL_DEPTH_TEST); // ÍπäÏù¥ ?åÏä§???úÏÑ±??
+	glEnable(GL_DEPTH_TEST); // depth buffer
 
 
 	make_vertexShaders();
 	make_fragmentShaders();
 	shaderProgramID = make_shaderProgram();
 
-	// obj ?åÏùº Î°úÎìú
+	// obj load
 	if (!LoadOBJ_PosNorm_Interleaved("sphere.obj", gSphere))
 	{
 		std::cerr << "Failed to load sphere.obj\n";
 		return 1;
 	}
 
-	// Î≤ÑÌçº ?∏ÌåÖ
+	// ?
 	setupBuffers();
 
 	// ?ïÏ†ê ?∞Ïù¥???§Ï†ï (?ºÍ∞Å???àÏ†ú)
@@ -69,13 +69,12 @@ int main(int argc, char** argv)
 		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // ?§Î•∏Ï™??ïÏ†ê (?åÎûë)
 	};
 
-	// Î©îÏù∏ Î£®ÌîÑ ÏßÑÏûÖ
 	glutMainLoop();
 
 	return 0;
 }
 
-// Íµ?Í∑∏Î¶¨???®Ïàò
+// draw sphere
 void DrawSphere(const Mesh& mesh, GLuint shaderProgram, const glm::mat4& model, const glm::vec3& color)
 {
 	GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
@@ -94,13 +93,12 @@ GLvoid drawScene()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// ?∞Ïù¥???¨Ïö©
+	// using shader program
 	glUseProgram(shaderProgramID);
 
 	GLint lightOnLoc = glGetUniformLocation(shaderProgramID, "lightOn");
-	glUniform1i(lightOnLoc, 1); // Ï°∞Î™Ö ÏºúÍ∏∞
+	glUniform1i(lightOnLoc, 1); // 1 light on / 0 light off
 
-	// Ï°∞Î™Ö/Í∞ùÏ≤¥ ???§Ï†ï
 	GLint lightLoc = glGetUniformLocation(shaderProgramID, "lightColor");
 	GLint objLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 
@@ -108,11 +106,12 @@ GLvoid drawScene()
 	glm::mat4 lightRotate = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::vec3 lightPos = glm::vec3(lightRotate* glm::vec4(lightBasePos, 1.0f));
 
-	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");  // Ï°∞Î™Ö ?ÑÏπò
-	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // Ïπ¥Î©î???ÑÏπò
-	glUniform3f(lightLoc, 1.0f, 1.0f, 1.0f);      // ??Ï°∞Î™Ö
-	glUniform3f(objLoc, 1.0f, 0.7f, 0.7f);      // ?§Î∏å?ùÌä∏ ??
-	glUniform3f(uLightPos, lightPos.x, lightPos.y, lightPos.z); // Ï°∞Î™Ö ?ÑÏπò
+	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");     // light position
+	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // camera position
+	// transfer to shader
+	glUniform3f(lightLoc, 1.0f, 1.0f, 1.0f);      // light color
+	glUniform3f(objLoc, 1.0f, 0.7f, 0.7f);        // object color
+	glUniform3f(uLightPos, lightPos.x, lightPos.y, lightPos.z); // light position
 
 	GLint viewLoc = glGetUniformLocation(shaderProgramID, "view");
 	GLint projLoc = glGetUniformLocation(shaderProgramID, "projection");
@@ -121,7 +120,7 @@ GLvoid drawScene()
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
 	glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // Ïπ¥Î©î???ÑÏπò ?ÑÎã¨
+	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // camera position to shader
 
 	// x√‡ ±‚¡ÿ -40µµ »∏¿¸ ( ¿ßø°º≠ æ∆∑°∑Œ ∫∏¥¬ ∞¢µµ )
 	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -138,23 +137,22 @@ GLvoid drawScene()
 	pTransform = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]);
 
-	Player player;  // () ?úÍ±∞
+	Player player;  // ?
 	Object* obj = &player;
 
-	// Ï§ëÏã¨ Íµ?
+	// center sphere
 	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
 	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
 	DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
 
 
-	// VBO ?∞Ïù¥??Î∞îÏù∏??
+	// VBO
 	if (!vertices.empty()) {
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
 			vertices.data(), GL_STATIC_DRAW);
 
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		obj->render(shaderProgramID, VAO, VBO, vertices);
 
 		glBindVertexArray(0);
@@ -179,7 +177,6 @@ void setupBuffers()
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	// ?ïÏ†ê ?çÏÑ± ?§Ï†ï: ?ÑÏπò (3Í∞? + ?âÏÉÅ (3Í∞? = Ï¥?6Í∞?float
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
