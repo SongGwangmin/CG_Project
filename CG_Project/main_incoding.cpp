@@ -1,8 +1,8 @@
-#include <glew.h>
+﻿#include <glew.h>
 #include <freeglut.h>
 #include <freeglut_ext.h> 
 
-#include <iostream> // 로그 ??
+#include <iostream> 
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -23,16 +23,15 @@ GLvoid drawScene();
 GLvoid Reshape(int w, int h);
 void setupBuffers();
 
-// ?�역 변??
 std::vector<float> vertices;
 GLuint VAO, VBO;
 
-Mesh gSphere;  // �?메쉬
+Mesh gSphere;  // sphere obj
 
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 깊이 버퍼 추�?
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);  // 源딆씠 踰꾪띁 異붽?
 	glutInitWindowPosition(100, 50);
 	glutInitWindowSize(width, height);
 	glutCreateWindow("ComputerGraphics_Prject");
@@ -40,42 +39,42 @@ int main(int argc, char** argv)
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	// 콜백 ?�언
+	// 肄쒕갚 ?좎뼵
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
 
-	glEnable(GL_DEPTH_TEST); // 깊이 ?�스???�성??
+	glEnable(GL_DEPTH_TEST); // 源딆씠 ?뚯뒪???쒖꽦??
 
 
 	make_vertexShaders();
 	make_fragmentShaders();
 	shaderProgramID = make_shaderProgram();
 
-	// obj ?�일 로드
+	// obj ?뚯씪 濡쒕뱶
 	if (!LoadOBJ_PosNorm_Interleaved("sphere.obj", gSphere))
 	{
 		std::cerr << "Failed to load sphere.obj\n";
 		return 1;
 	}
 
-	// 버퍼 ?�팅
+	// 踰꾪띁 ?명똿
 	setupBuffers();
 
-	// ?�점 ?�이???�정 (?�각???�제)
+	// ?뺤젏 ?곗씠???ㅼ젙 (?쇨컖???덉젣)
 	vertices = {
-		// ?�치              // ?�상
-		 0.0f,  0.5f, -2.0f,  1.0f, 0.0f, 0.0f,  // ?�쪽 ?�점 (빨강)
-		-0.5f, -0.5f, -2.0f,  0.0f, 1.0f, 0.0f,  // ?�쪽 ?�점 (초록)
-		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // ?�른�??�점 (?�랑)
+		// ?꾩튂              // ?됱긽
+		 0.0f,  0.5f, -2.0f,  1.0f, 0.0f, 0.0f,  // ?꾩そ ?뺤젏 (鍮④컯)
+		-0.5f, -0.5f, -2.0f,  0.0f, 1.0f, 0.0f,  // ?쇱そ ?뺤젏 (珥덈줉)
+		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // ?ㅻⅨ履??뺤젏 (?뚮옉)
 	};
 
-	// 메인 루프 진입
+	// 硫붿씤 猷⑦봽 吏꾩엯
 	glutMainLoop();
 
 	return 0;
 }
 
-// �?그리???�수
+// 援?洹몃━???⑥닔
 void DrawSphere(const Mesh& mesh, GLuint shaderProgram, const glm::mat4& model, const glm::vec3& color)
 {
 	GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
@@ -94,13 +93,12 @@ GLvoid drawScene()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// ?�이???�용
+	// using shader program
 	glUseProgram(shaderProgramID);
 
 	GLint lightOnLoc = glGetUniformLocation(shaderProgramID, "lightOn");
-	glUniform1i(lightOnLoc, 1); // 조명 켜기
+	glUniform1i(lightOnLoc, 1); // light mode on
 
-	// 조명/객체 ???�정
 	GLint lightLoc = glGetUniformLocation(shaderProgramID, "lightColor");
 	GLint objLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 
@@ -108,11 +106,11 @@ GLvoid drawScene()
 	//glm::mat4 lightRotate = glm::rotate(glm::mat4(1.0f), glm::radians(angleCenterY), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::vec3 lightPos = glm::vec3(glm::vec4(lightBasePos, 1.0f));
 
-	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");  // 조명 ?�치
-	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // 카메???�치
-	glUniform3f(lightLoc, 1.0f, 1.0f, 1.0f);      // ??조명
-	glUniform3f(objLoc, 1.0f, 0.7f, 0.7f);      // ?�브?�트 ??
-	glUniform3f(uLightPos, lightPos.x, lightPos.y, lightPos.z); // 조명 ?�치
+	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");     // light pos
+	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // camera pos
+	glUniform3f(lightLoc, 1.0f, 1.0f, 1.0f);                    // light color transfer
+	glUniform3f(objLoc, 1.0f, 0.7f, 0.7f);                      // object color transfer
+	glUniform3f(uLightPos, lightPos.x, lightPos.y, lightPos.z); // light pos transfer
 
 	GLint viewLoc = glGetUniformLocation(shaderProgramID, "view");
 	GLint projLoc = glGetUniformLocation(shaderProgramID, "projection");
@@ -121,7 +119,7 @@ GLvoid drawScene()
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // 카메???�치 ?�달
+	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // camera pos transfer
 
 	glm::mat4 vTransform = glm::mat4(1.0f);
 	vTransform = glm::lookAt(cameraPos, cameraDirection, cameraUp);
@@ -134,16 +132,15 @@ GLvoid drawScene()
 	pTransform = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]);
 
-	Player player;  // () ?�거
+	Player player; // player?
 	Object* obj = &player;
 
-	// 중심 �?
+	// center sphere
 	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
 	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
 	DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
 
-
-	// VBO ?�이??바인??
+	// triangle
 	if (!vertices.empty()) {
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -175,7 +172,6 @@ void setupBuffers()
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	// ?�점 ?�성 ?�정: ?�치 (3�? + ?�상 (3�? = �?6�?float
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
