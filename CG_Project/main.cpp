@@ -58,15 +58,15 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	// ?
+	// buffer setting
 	setupBuffers();
 
-	// ?•ì  ?°ì´???¤ì • (?¼ê°???ˆì œ)
+	// vertex data setting
 	vertices = {
-		// ?„ì¹˜              // ?‰ìƒ
-		 0.0f,  0.5f, -2.0f,  1.0f, 0.0f, 0.0f,  // ?„ìª½ ?•ì  (ë¹¨ê°•)
-		-0.5f, -0.5f, -2.0f,  0.0f, 1.0f, 0.0f,  // ?¼ìª½ ?•ì  (ì´ˆë¡)
-		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // ?¤ë¥¸ìª??•ì  (?Œë‘)
+		// position             // color
+		 0.0f,  0.5f, -2.0f,  1.0f, 0.0f, 0.0f,  // top vertex (red)
+		-0.5f, -0.5f, -2.0f,  0.0f, 1.0f, 0.0f,  // left vertex (green)
+		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // right vertex (blue)
 	};
 
 	glutMainLoop();
