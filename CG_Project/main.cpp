@@ -22,12 +22,15 @@
 GLvoid drawScene();
 GLvoid Reshape(int w, int h);
 void setupBuffers();
+void TimerFunction(int value);
 
 // ?
 std::vector<float> vertices;
 GLuint VAO, VBO;
 
 Mesh gSphere;  // sphere obj
+
+glm::vec3 spherePosition(-32.0f, -20.0f, -90.0f);
 
 int main(int argc, char** argv)
 {
@@ -43,6 +46,7 @@ int main(int argc, char** argv)
 	// callback 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
+	glutTimerFunc(16, TimerFunction, 0);  // ~60 FPS (16ms)
 
 	glEnable(GL_DEPTH_TEST); // depth buffer
 
@@ -122,8 +126,8 @@ GLvoid drawScene()
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glUniform3f(viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);  // camera position to shader
 
-	// x축 기준 -40도 회전 ( 위에서 아래로 보는 각도 )
-	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	// x축 기준 -40도 회전 ( 위에서 아래로 보는 각도 ) << 직각이 되어야 보기 편할 거 같아요
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	cameraPos = glm::vec3(rotation * glm::vec4(cameraPos - cameraDirection, 1.0f)) + cameraDirection;
 
 	glm::mat4 vTransform = glm::mat4(1.0f);
@@ -141,7 +145,7 @@ GLvoid drawScene()
 	Object* obj = &player;
 
 	// center sphere
-	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.0f));
+	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), spherePosition);
 	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
 	DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
 
@@ -184,4 +188,12 @@ void setupBuffers()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+}
+
+void TimerFunction(int value)
+{
+	spherePosition.z += 0.05f;
+
+	glutPostRedisplay();
+	glutTimerFunc(16, TimerFunction, 0);  // 다음 타이머 등록
 }
