@@ -30,7 +30,7 @@ GLuint VAO, VBO;
 
 Mesh gSphere;  // sphere obj
 
-glm::vec3 spherePosition(-32.0f, -20.0f, -90.0f);
+glm::vec3 spherePosition(-40.0f, -20.0f, -90.0f);
 
 int main(int argc, char** argv)
 {
@@ -192,7 +192,8 @@ void setupBuffers()
 
 void TimerFunction(int value)
 {
-	spherePosition.z += 0.05f;
+	if (spherePosition.z < -40.0f)
+		spherePosition.z += 0.05f;
 
 	glutPostRedisplay();
 	glutTimerFunc(16, TimerFunction, 0);  // 다음 타이머 등록
