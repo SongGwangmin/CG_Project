@@ -5,7 +5,7 @@
 
 #include "Object.h"
 
-void Object::update()
+void Player::update(float deltaTime)
 {
 
 }

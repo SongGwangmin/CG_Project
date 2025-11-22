@@ -18,7 +18,7 @@ protected:
 	glm::vec3 cameraUp;
 	
 public:
-	void update();
+	virtual void update(float deltaTime) = 0;
 	virtual void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) = 0;
 	void setPosition(float x, float y, float z)
 	{
@@ -43,6 +43,7 @@ public:
 		position = glm::vec3(0.0f, 0.0f, 0.0f);
 		power = 10.0f;
 	}
+	void update(float deltaTime) override;
 	void move(float dx, float dy);
 	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override;
 	void damaged(float damage);  // 데미지 입음
@@ -55,6 +56,7 @@ class Bullet : public Object
 private:
 	float damage;
 public:
+	void update(float deltaTime) override;
 	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override {
 		// Bullet의 렌더링 구현
 	}

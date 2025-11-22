@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <ctime>
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -30,7 +31,11 @@ GLuint VAO, VBO;
 
 Mesh gSphere;  // sphere obj
 
-glm::vec3 spherePosition(-40.0f, -20.0f, -90.0f);
+glm::vec3 spherePosition(-40.0f, 25.0f, -90.0f);
+float vy = 0.0f;  // y 방향 속도
+clock_t lastTime;  // 이전 프레임 시간
+const float gravity = -9.8f * 2;  // 중력 가속도
+const float groundY = -20.0f;  // 바닥 위치
 
 int main(int argc, char** argv)
 {
@@ -72,6 +77,9 @@ int main(int argc, char** argv)
 		-0.5f, -0.5f, -2.0f,  0.0f, 1.0f, 0.0f,  // left vertex (green)
 		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // right vertex (blue)
 	};
+
+	// 시간 초기화
+	lastTime = clock();
 
 	glutMainLoop();
 
@@ -192,8 +200,26 @@ void setupBuffers()
 
 void TimerFunction(int value)
 {
+	// 델타 타임 계산
+	clock_t currentTime = clock();
+	float deltaTime = (float)(currentTime - lastTime) / CLOCKS_PER_SEC;
+	lastTime = currentTime;
+
+	// z축 이동
 	if (spherePosition.z < -40.0f)
-		spherePosition.z += 0.05f;
+		spherePosition.z += 5.0f * deltaTime;
+
+	// 중력 적용
+	vy += gravity * deltaTime;
+
+	// y 위치 업데이트
+	spherePosition.y += vy * deltaTime;
+
+	// 바닥 충돌 체크 (완전탄성 충돌)
+	if (spherePosition.y <= groundY) {
+		spherePosition.y = groundY;  // 바닥 위치로 보정
+		vy *= -1.0f;  // 속도 반전 (완전탄성)
+	}
 
 	glutPostRedisplay();
 	glutTimerFunc(16, TimerFunction, 0);  // 다음 타이머 등록
