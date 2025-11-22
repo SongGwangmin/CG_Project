@@ -68,7 +68,7 @@ void Bullet::update(float deltaTime)
 
 void Bullet::render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) // 렌더링 할 때 넘겨줘야 하는 값들 - shaderProgramID, VAO, VBO, vertices, 정점 개수
 {
-	unsigned int modelLocation = glGetUniformLocation(shaderProgramID, "modelTransform");
+	unsigned int modelLocation = glGetUniformLocation(shaderProgramID, "model");
 	glm::mat4 modelTransform = glm::mat4(1.0f);
 	modelTransform = glm::translate(modelTransform, position);
 	//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelTransform[0][0]);
@@ -83,10 +83,12 @@ void Bullet::render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vect
 
 	glBindVertexArray(mesh.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, mesh.count * sizeof(float),
-		vertices.data(), GL_STATIC_DRAW);
+	/*glBufferData(GL_ARRAY_BUFFER, mesh.count * sizeof(float),
+		vertices.data(), GL_STATIC_DRAW);*/
 
 	glDrawArrays(GL_TRIANGLES, 0, mesh.count);
+
+
 
 	glBindVertexArray(0);
 

@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 	};
 
 	Player* player = new Player();
-	//objects.push_back(player);
+	objects.push_back(player);
 
 	Bullet* bullet = new Bullet();
 	bullet->setPosition(-40.0f, 25.0f, -90.0f);
