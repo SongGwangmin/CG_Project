@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 	};
 
 	Player* player = new Player();
-	objects.push_back(player);
+	//objects.push_back(player);
 
 	Bullet* bullet = new Bullet();
 	bullet->setPosition(-40.0f, 25.0f, -90.0f);
@@ -125,7 +125,7 @@ GLvoid drawScene()
 
 	glm::vec3 lightBasePos(3.0f, 0.0f, 2.5f);
 	glm::mat4 lightRotate = glm::rotate(glm::mat4(1.0f), glm::radians(-40.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::vec3 lightPos = glm::vec3(lightRotate* glm::vec4(lightBasePos, 1.0f));
+	glm::vec3 lightPos = glm::vec3(lightRotate * glm::vec4(lightBasePos, 1.0f));
 
 	GLint uLightPos = glGetUniformLocation(shaderProgramID, "lightPos");     // light position
 	GLuint viewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");    // camera position
@@ -158,28 +158,26 @@ GLvoid drawScene()
 	pTransform = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, &pTransform[0][0]);
 
-	Player player;  // ?
-	Object* obj = &player;
+	
 
 	// center sphere
 	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), spherePosition);
 	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
 	//DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
 
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
+		vertices.data(), GL_STATIC_DRAW);
 
-	// VBO
-	if (!vertices.empty()) {
-		glBindVertexArray(VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
-			vertices.data(), GL_STATIC_DRAW);
 
+
+	for (auto obj : objects){
 		obj->render(shaderProgramID, VAO, VBO, vertices);
-
-		glBindVertexArray(0);
 	}
-
 	
+
+	glBindVertexArray(0);
 	glutSwapBuffers();
 }
 

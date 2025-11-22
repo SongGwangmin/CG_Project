@@ -71,26 +71,23 @@ void Bullet::render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vect
 	unsigned int modelLocation = glGetUniformLocation(shaderProgramID, "modelTransform");
 	glm::mat4 modelTransform = glm::mat4(1.0f);
 	modelTransform = glm::translate(modelTransform, position);
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelTransform[0][0]);
+	//glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelTransform[0][0]);
 
 
 	// center sphere
 	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), position);
 	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
 
+	modelTransform = centerM;
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &modelTransform[0][0]);
 
+	glBindVertexArray(mesh.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, mesh.count * sizeof(float),
+		vertices.data(), GL_STATIC_DRAW);
 
+	glDrawArrays(GL_TRIANGLES, 0, mesh.count);
 
-	// Player 클래스의 렌더링 코드 작성
-	if (!vertices.empty()) {
-		glBindVertexArray(mesh.vao);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-		glBufferData(GL_ARRAY_BUFFER, mesh.count * sizeof(float),
-			vertices.data(), GL_STATIC_DRAW);
-
-		glDrawArrays(GL_TRIANGLES, 0, mesh.count);
-
-		glBindVertexArray(0);
-	}
+	glBindVertexArray(0);
 
 }
