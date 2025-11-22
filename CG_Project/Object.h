@@ -5,6 +5,8 @@
 #include <vector>
 #include <glew.h>
 
+#include "sphere_obj_load.h"
+
 class Object
 {
 protected:
@@ -16,13 +18,20 @@ protected:
 	glm::vec3 cameraPosition;
 	glm::vec3 cameraTarget;
 	glm::vec3 cameraUp;
+	Mesh mesh;
+	float vy;  // y 방향 속도 (중력 적용용)
 	
 public:
+	Object() : vy(0.0f) {};
 	virtual void update(float deltaTime) = 0;
 	virtual void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) = 0;
 	void setPosition(float x, float y, float z)
 	{
 		position = glm::vec3(x, y, z);
+	}
+	void setMesh(const Mesh& m)
+	{
+		mesh = m;
 	}
 };
 
@@ -57,8 +66,6 @@ private:
 	float damage;
 public:
 	void update(float deltaTime) override;
-	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override {
-		// Bullet의 렌더링 구현
-	}
+	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override;
 };
 

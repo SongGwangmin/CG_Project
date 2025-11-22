@@ -31,6 +31,8 @@ GLuint VAO, VBO;
 
 Mesh gSphere;  // sphere obj
 
+
+
 glm::vec3 spherePosition(-40.0f, 25.0f, -90.0f);
 float vy = 0.0f;  // y 방향 속도
 clock_t lastTime;  // 이전 프레임 시간
