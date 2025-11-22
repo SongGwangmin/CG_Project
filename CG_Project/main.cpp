@@ -31,7 +31,7 @@ GLuint VAO, VBO;
 
 Mesh gSphere;  // sphere obj
 
-
+std::vector<Object*> objects; // object list
 
 glm::vec3 spherePosition(-40.0f, 25.0f, -90.0f);
 float vy = 0.0f;  // y 방향 속도
@@ -80,6 +80,13 @@ int main(int argc, char** argv)
 		 0.5f, -0.5f, -2.0f,  0.0f, 0.0f, 1.0f   // right vertex (blue)
 	};
 
+	Player* player = new Player();
+	objects.push_back(player);
+
+	Bullet* bullet = new Bullet();
+	bullet->setPosition(-40.0f, 25.0f, -90.0f);
+	bullet->setMesh(gSphere);
+	objects.push_back(bullet);
 	// 시간 초기화
 	lastTime = clock();
 
@@ -157,7 +164,7 @@ GLvoid drawScene()
 	// center sphere
 	glm::mat4 centerM = glm::translate(glm::mat4(1.0f), spherePosition);
 	centerM = glm::scale(centerM, glm::vec3(1.5f, 1.5f, 1.5f));
-	DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
+	//DrawSphere(gSphere, shaderProgramID, centerM, glm::vec3(0.8f, 0.0f, 0.0f));
 
 
 	// VBO
@@ -207,7 +214,7 @@ void TimerFunction(int value)
 	float deltaTime = (float)(currentTime - lastTime) / CLOCKS_PER_SEC;
 	lastTime = currentTime;
 
-	// z축 이동
+	/*// z축 이동
 	if (spherePosition.z < -40.0f)
 		spherePosition.z += 5.0f * deltaTime;
 
@@ -221,6 +228,9 @@ void TimerFunction(int value)
 	if (spherePosition.y <= groundY) {
 		spherePosition.y = groundY;  // 바닥 위치로 보정
 		vy *= -1.0f;  // 속도 반전 (완전탄성)
+	}*/
+	for (auto obj : objects) {
+		obj->update(deltaTime);
 	}
 
 	glutPostRedisplay();
