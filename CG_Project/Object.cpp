@@ -3,6 +3,8 @@
 #include <freeglut_ext.h>
 #include <vector>
 
+#include <iostream>
+
 #include "Object.h"
 
 void Player::update(float deltaTime)
@@ -63,11 +65,20 @@ void Bullet::update(float deltaTime)
 	if (position.y <= -20.0f) { // groundY = -20.0f
 		position.y = -20.0f;  // 바닥 위치로 보정
 		vy *= -1.0f;  // 속도 반전 (완전탄성)
+		if (vy < 29.2f) {
+			vy = 29.2f; // 최소 반발 속도 설정
+		}
+		std::cout << "Bullet bounced on the ground. New vy: " << vy << " " << position.z << std::endl;
+	}
+
+	if (-40.0f <= position.z) {
+		position.z = -90.0f; // reset position
 	}
 }
 
 void Bullet::render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) // 렌더링 할 때 넘겨줘야 하는 값들 - shaderProgramID, VAO, VBO, vertices, 정점 개수
 {
+	// shpere's radius = 1.0f, scale = 1.5f -> actual radius = 1.5f
 	unsigned int modelLocation = glGetUniformLocation(shaderProgramID, "model");
 	glm::mat4 modelTransform = glm::mat4(1.0f);
 	modelTransform = glm::translate(modelTransform, position);
