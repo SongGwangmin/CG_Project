@@ -508,7 +508,7 @@ int main(int argc, char** argv)
 	}
 	player.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
 	if (currentStage == 1 || currentStage == 2) {
-		player.setScale(glm::vec3(0.2f));
+		player.setScale(glm::vec3(1.0f));
 	}
 	player.setColor(glm::vec3(0.2f, 0.8f, 1.0f));
 
