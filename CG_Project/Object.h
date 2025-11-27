@@ -82,6 +82,10 @@ class Player : public Object
 {
 private:
 	float power;
+	int left_keydown;
+	int right_keydown;
+	int up_keydown;
+	int down_keydown;
 public:
 	Player()
 	{
@@ -91,10 +95,32 @@ public:
 		speed = 0.1f;
 		position = glm::vec3(0.0f, 0.0f, 0.0f);
 		power = 10.0f;
+		left_keydown = 0;
+		right_keydown = 0;
+		up_keydown = 0;
+		down_keydown = 0;
 	}
 	void move(float dx, float dy);
 	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override;
 	void damaged(float damage);  // 데미지 입음
+	
+	// 키 입력 상태를 1로 설정하는 함수들
+	void setLeftKeyDown() { left_keydown = 1; }
+	void setRightKeyDown() { right_keydown = 1; }
+	void setUpKeyDown() { up_keydown = 1; }
+	void setDownKeyDown() { down_keydown = 1; }
+	
+	// 키 입력 상태를 0으로 설정하는 함수들
+	void resetLeftKeyDown() { left_keydown = 0; }
+	void resetRightKeyDown() { right_keydown = 0; }
+	void resetUpKeyDown() { up_keydown = 0; }
+	void resetDownKeyDown() { down_keydown = 0; }
+	
+	// 키 입력 상태를 가져오는 함수들
+	int getLeftKeyDown() const { return left_keydown; }
+	int getRightKeyDown() const { return right_keydown; }
+	int getUpKeyDown() const { return up_keydown; }
+	int getDownKeyDown() const { return down_keydown; }
 };
 
 
