@@ -24,7 +24,7 @@ Mesh gSphere;  // sphere obj
 Mesh gPlayer; // player obj
 
 Player player; // player object(temp)
-int currentStage = 1;   // current stage 0: title, 1, 2, 3
+int currentStage = 2;   // current stage 0: title, 1, 2, 3
 
 std::vector<Bullet> bullets;  // bullet objects
 
@@ -382,14 +382,15 @@ void CreateBulletPaze_2()
 	float xangle = bulletAngleDistribution(generator);
 	
 	//39 / 2 = 19.5
-
-	for (int i = 0; i < 19 + 1; ++i)
+	int vertexgap = 8;
+	for (int i = 0; i < 13 + 1; ++i) // 13개면 꽉참
 	{
 		float xgap = static_cast <float>(i) * 6;
 		// 10 bullets per xgap y distribution is 20 ~ -20, z is -50
-		for (int j = 0; j < 10; ++j)
+
+		for (int j = 0; j < vertexgap; ++j)
 		{
-			float ygap = static_cast <float>(j) * 4 + 1;
+			float ygap = static_cast <float>(j) * (40 / vertexgap) + 1; // 40
 			Bullet* b = new Bullet();
 			glm::vec3 initialPos(-39.0f + xgap, 20.0f - ygap, 10.0f);
 			// rotate around Y axis by xangle
