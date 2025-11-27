@@ -254,6 +254,9 @@ void BulletTimer(int value)
 		clock_t currentTime = clock();
 		float deltaTime = float(currentTime - lastTime) / CLOCKS_PER_SEC;
 		lastTime = currentTime;
+		
+		player.move(deltaTime); // 플레이어 이동 처리
+		
 		glm::vec3 ppos = player.getPosition();
 		// 여기에 1,2페이즈에 사용할 타이머 기능 구현
 		for (auto& b : bullets)
@@ -267,6 +270,9 @@ void BulletTimer(int value)
 		clock_t currentTime = clock();
 		float deltaTime = float(currentTime - lastTime) / CLOCKS_PER_SEC;
 		lastTime = currentTime;
+		
+		player.move(deltaTime); // 플레이어 이동 처리
+		
 		glm::vec3 ppos = player.getPosition();
 		// 여기에 1,2페이즈에 사용할 타이머 기능 구현
 		for (auto& b : bullets)
@@ -279,6 +285,12 @@ void BulletTimer(int value)
 	else
 	if (currentStage == 3)
 	{
+		clock_t currentTime = clock();
+		float deltaTime = float(currentTime - lastTime) / CLOCKS_PER_SEC;
+		lastTime = currentTime;
+		
+		player.move(deltaTime); // 플레이어 이동 처리
+		
 		float t = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 
 		glm::vec3 ppos = player.getPosition();
@@ -425,19 +437,19 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	{
 	case 'a':
 		player.setLeftKeyDown();
-		player.move(-1.0f, 0.0f); // move left
+		//player.move(-1.0f, 0.0f); // move left
 		break;
 	case 'd':
 		player.setRightKeyDown();
-		player.move(1.0f, 0.0f); // move right
+		//player.move(1.0f, 0.0f); // move right
 		break;
 	case 'w':
 		player.setUpKeyDown();
-		player.move(0.0f, 1.0f); // move front
+		//player.move(0.0f, 1.0f); // move front
 		break;
 	case 's':
 		player.setDownKeyDown();
-		player.move(0.0f, -1.0f); // move back
+		//player.move(0.0f, -1.0f); // move back
 		break;
 	case 'y': if (angleCameraY == 0.0f) angleCameraY = 90.0f; else angleCameraY = 0.0f; break; // toggle camera rotation
 	case 'q': exit(0); break;   // quit

@@ -12,10 +12,23 @@ void Object::update()
 
 }
 
-void Player::move(float dx, float dy)
+void Player::move(float deltaTime)
 {
-	position.x += dx * speed;
-	position.y += dy * speed;
+	// 키 상태에 따라 방향 계산
+	float dirx = 0.0f;
+	float diry = 0.0f;
+
+	if (left_keydown) dirx -= 1.0f;
+	if (right_keydown) dirx += 1.0f;
+	if (up_keydown) diry += 1.0f;
+	if (down_keydown) diry -= 1.0f;
+
+	// 이동 실행 (deltaTime 기반)
+	if (dirx != 0.0f || diry != 0.0f)
+	{
+		position.x += dirx * speed * deltaTime;
+		position.y += diry * speed * deltaTime;
+	}
 }
 
 void Player::damaged(float damage)

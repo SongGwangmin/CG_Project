@@ -92,7 +92,7 @@ public:
 		// 기본값 설정
 		maxHp = 1000.0f;
 		currentHp = maxHp;
-		speed = 0.1f;
+		speed = 10.0f;
 		position = glm::vec3(0.0f, 0.0f, 0.0f);
 		power = 10.0f;
 		left_keydown = 0;
@@ -100,7 +100,7 @@ public:
 		up_keydown = 0;
 		down_keydown = 0;
 	}
-	void move(float dx, float dy);
+	void move(float deltaTime);
 	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override;
 	void damaged(float damage);  // 데미지 입음
 	
