@@ -19,6 +19,8 @@
 
 GLvoid drawScene();
 GLvoid Reshape(int w, int h);
+GLvoid Keyboard(unsigned char key, int x, int y);
+GLvoid KeyboardUp(unsigned char key, int x, int y);
 
 Mesh gSphere;  // sphere obj
 Mesh gPlayer; // player obj
@@ -422,19 +424,42 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case 'a':
+		player.setLeftKeyDown();
 		player.move(-1.0f, 0.0f); // move left
 		break;
 	case 'd':
+		player.setRightKeyDown();
 		player.move(1.0f, 0.0f); // move right
 		break;
 	case 'w':
+		player.setUpKeyDown();
 		player.move(0.0f, 1.0f); // move front
 		break;
 	case 's':
+		player.setDownKeyDown();
 		player.move(0.0f, -1.0f); // move back
 		break;
 	case 'y': if (angleCameraY == 0.0f) angleCameraY = 90.0f; else angleCameraY = 0.0f; break; // toggle camera rotation
 	case 'q': exit(0); break;   // quit
+	}
+}
+
+GLvoid KeyboardUp(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+	case 'a':
+		player.resetLeftKeyDown();
+		break;
+	case 'd':
+		player.resetRightKeyDown();
+		break;
+	case 'w':
+		player.resetUpKeyDown();
+		break;
+	case 's':
+		player.resetDownKeyDown();
+		break;
 	}
 }
 
@@ -492,6 +517,7 @@ int main(int argc, char** argv)
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
+	glutKeyboardUpFunc(KeyboardUp); // 키를 뗐을 때 콜백
 	glutTimerFunc(16, BulletTimer, 0); // start bullet timer
 
 	glEnable(GL_DEPTH_TEST); // depth buffer
