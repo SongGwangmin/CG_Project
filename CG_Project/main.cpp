@@ -641,7 +641,7 @@ GLvoid drawScene()
 	// 조명 끄고 깊이 테스트 비활성화하여 항상 보이도록
 	glUniform1i(lightOnLoc, 0);  // 조명 끄기
 	glDisable(GL_DEPTH_TEST);    // 깊이 테스트 끄기
-	player.renderBoundingBoxes(shaderProgramID);
+	//player.renderBoundingBoxes(shaderProgramID);
 	glEnable(GL_DEPTH_TEST);     // 깊이 테스트 복원
 	glUniform1i(lightOnLoc, 1);  // 조명 복원
 
