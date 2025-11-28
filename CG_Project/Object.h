@@ -102,6 +102,7 @@ public:
 	}
 	void move(float deltaTime);
 	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override;
+	void renderBoundingBoxes(GLuint& shaderProgramID); // 바운딩 박스 시각화
 	void damaged(float damage);  // 데미지 입음
 	
 	// 키 입력 상태를 1로 설정하는 함수들

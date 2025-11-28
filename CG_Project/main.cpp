@@ -637,6 +637,9 @@ GLvoid drawScene()
 	player.render(shaderProgramID, gPlayer.vao, gPlayer.vbo, bulletVertices);
 	//glDrawArrays(GL_TRIANGLES, 0, 8448);
 
+	// 바운딩 박스 시각화 (디버그용)
+	player.renderBoundingBoxes(shaderProgramID);
+
 	glBindVertexArray(gSphere.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, gSphere.vbo);
 

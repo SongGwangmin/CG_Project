@@ -66,6 +66,95 @@ void Player::render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vect
 	glBindVertexArray(0);
 }
 
+void Player::renderBoundingBoxes(GLuint& shaderProgramID)
+{
+	// 플레이어의 모델 변환 행렬 계산 (render 함수와 동일)
+	glm::mat4 modelTransform = glm::mat4(1.0f);
+	modelTransform = glm::translate(modelTransform, position);
+	modelTransform = glm::scale(modelTransform, scale);
+	//modelTransform = glm::rotate(modelTransform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	
+	GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelTransform[0][0]);
+	
+	// 바운딩 박스 색상 (빨간색, 녹색, 파란색으로 구분)
+	glm::vec3 boxColors[3] = {
+		glm::vec3(1.0f, 0.0f, 0.0f),  // 하단: 빨강
+		glm::vec3(0.0f, 1.0f, 0.0f),  // 중단: 녹색
+		glm::vec3(0.0f, 0.0f, 1.0f)   // 상단: 파랑
+	};
+	
+	GLint colorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+	
+	auto boundingBoxes = getBoundingBoxes();
+	
+	// 라인 모드로 그리기
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(3.0f);  // 라인 두께
+	
+	for (size_t i = 0; i < boundingBoxes.size(); ++i)
+	{
+		const auto& box = boundingBoxes[i];
+		
+		// 색상 설정
+		glUniform3f(colorLoc, boxColors[i].x, boxColors[i].y, boxColors[i].z);
+		
+		// 바운딩 박스의 8개 꼭지점 (z축 ±0.1로 두께 추가)
+		float vertices[] = {
+			// 앞면 (z = 0.1)
+			box.min.x, box.min.y, 0.1f,
+			box.max.x, box.min.y, 0.1f,
+			box.max.x, box.max.y, 0.1f,
+			box.min.x, box.max.y, 0.1f,
+			// 뒷면 (z = -0.1)
+			box.min.x, box.min.y, -0.1f,
+			box.max.x, box.min.y, -0.1f,
+			box.max.x, box.max.y, -0.1f,
+			box.min.x, box.max.y, -0.1f
+		};
+		
+		// 라인 인덱스 (박스의 12개 모서리)
+		unsigned int indices[] = {
+			// 앞면
+			0, 1, 1, 2, 2, 3, 3, 0,
+			// 뒷면
+			4, 5, 5, 6, 6, 7, 7, 4,
+			// 연결선
+			0, 4, 1, 5, 2, 6, 3, 7
+		};
+		
+		// VAO, VBO 생성
+		GLuint vao, vbo, ebo;
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+		glGenBuffers(1, &ebo);
+		
+		glBindVertexArray(vao);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		
+		// 위치 속성
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		
+		// 그리기
+		glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+		
+		// 정리
+		glDeleteBuffers(1, &vbo);
+		glDeleteBuffers(1, &ebo);
+		glDeleteVertexArrays(1, &vao);
+	}
+	
+	// 다시 채우기 모드로 복원
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glLineWidth(1.0f);
+}
+
 void Bullet::update_first_paze(float deltaTime)
 {
 	// z축 이동
