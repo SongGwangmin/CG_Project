@@ -166,8 +166,11 @@ bool Bullet::collide(const glm::mat4& view, const glm::mat4& proj, Player& playe
 	// -------------------------------------------------------
 	// 3. 각 바운딩 박스와 충돌 검사
 	// -------------------------------------------------------
-	for (const auto& box : boundingBoxes)
+	const char* boxNames[] = {"하단 박스(Bottom Box)", "중단 박스(Middle Box)", "상단 박스(Top Box)"};
+	
+	for (size_t boxIndex = 0; boxIndex < boundingBoxes.size(); ++boxIndex)
 	{
+		const auto& box = boundingBoxes[boxIndex];
 		// 바운딩 박스의 4개 꼭지점을 월드 좌표로 변환
 		glm::vec4 corners[4] = {
 			playerModelMatrix * glm::vec4(box.min.x, box.min.y, 0.0f, 1.0f), // 좌하단
@@ -226,7 +229,7 @@ bool Bullet::collide(const glm::mat4& view, const glm::mat4& proj, Player& playe
 		// 타원 내부에 가장 가까운 점이 있으면 충돌
 		if ((x_term * x_term) + (y_term * y_term) <= 1.0f)
 		{
-			std::cout << "Collision detected with bounding box!" << std::endl;
+			std::cout << "Collision detected! Box: " << boxNames[boxIndex] << " (Index: " << boxIndex << ")" << std::endl;
 			return true;
 		}
 	}
