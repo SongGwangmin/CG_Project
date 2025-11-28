@@ -145,6 +145,9 @@
   <ItemGroup>
     <None Include="fragment.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug_boundingbox_fix.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

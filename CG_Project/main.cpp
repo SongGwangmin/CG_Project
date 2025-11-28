@@ -638,7 +638,12 @@ GLvoid drawScene()
 	//glDrawArrays(GL_TRIANGLES, 0, 8448);
 
 	// 바운딩 박스 시각화 (디버그용)
+	// 조명 끄고 깊이 테스트 비활성화하여 항상 보이도록
+	glUniform1i(lightOnLoc, 0);  // 조명 끄기
+	glDisable(GL_DEPTH_TEST);    // 깊이 테스트 끄기
 	player.renderBoundingBoxes(shaderProgramID);
+	glEnable(GL_DEPTH_TEST);     // 깊이 테스트 복원
+	glUniform1i(lightOnLoc, 1);  // 조명 복원
 
 	glBindVertexArray(gSphere.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, gSphere.vbo);

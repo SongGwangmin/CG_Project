@@ -1,0 +1,39 @@
+바운딩 박스 시각화 문제 해결 가이드
+=====================================
+
+현재 수정사항:
+- z 좌표를 ±0.01f로 축소
+
+추가 확인사항:
+
+1. 빨간색 박스가 안 보이는 이유:
+   - 하단 박스의 y 범위: -2.768519 ~ 1.6254
+   - 회전 후: 이 범위가 z축이 되므로 카메라에서 매우 멀 수 있음
+   - 해결: 카메라 위치 확인 (cameraPos)
+
+2. 초록/파랑 박스가 x축으로 회전된 것처럼 보이는 이유:
+   - x축 기준 90도 회전: y → z, z → -y
+   - 이것이 정상입니다!
+
+3. 바운딩 박스를 올바르게 보려면:
+   Option A) 깊이 테스트 비활성화 (디버그용)
+      player.renderBoundingBoxes() 전에:
+      glDisable(GL_DEPTH_TEST);
+      
+      player.renderBoundingBoxes() 후에:
+      glEnable(GL_DEPTH_TEST);
+
+   Option B) 바운딩 박스를 항상 위에 그리기
+      glDepthFunc(GL_ALWAYS);
+      player.renderBoundingBoxes();
+      glDepthFunc(GL_LESS);
+
+   Option C) 와이어프레임을 더 두껍게
+      glLineWidth(5.0f); // 현재 3.0f
+
+4. 색상 문제 확인:
+   - lightOn이 1이면 조명 영향을 받음
+   - 라인 렌더링 전에 조명 끄기:
+      glUniform1i(lightOnLoc, 0);
+      player.renderBoundingBoxes();
+      glUniform1i(lightOnLoc, 1);

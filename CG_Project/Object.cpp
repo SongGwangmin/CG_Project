@@ -72,7 +72,7 @@ void Player::renderBoundingBoxes(GLuint& shaderProgramID)
 	glm::mat4 modelTransform = glm::mat4(1.0f);
 	modelTransform = glm::translate(modelTransform, position);
 	modelTransform = glm::scale(modelTransform, scale);
-	//modelTransform = glm::rotate(modelTransform, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	modelTransform = glm::rotate(modelTransform, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	
 	GLint modelLoc = glGetUniformLocation(shaderProgramID, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &modelTransform[0][0]);
@@ -99,18 +99,19 @@ void Player::renderBoundingBoxes(GLuint& shaderProgramID)
 		// 색상 설정
 		glUniform3f(colorLoc, boxColors[i].x, boxColors[i].y, boxColors[i].z);
 		
-		// 바운딩 박스의 8개 꼭지점 (z축 ±0.1로 두께 추가)
+		// 바운딩 박스의 8개 꼭지점 (모델링 좌표계, xy 평면)
+		// z=0인 평면에 박스를 그림 (회전 변환은 modelTransform에서 처리)
 		float vertices[] = {
-			// 앞면 (z = 0.1)
-			box.min.x, box.min.y, 0.1f,
-			box.max.x, box.min.y, 0.1f,
-			box.max.x, box.max.y, 0.1f,
-			box.min.x, box.max.y, 0.1f,
-			// 뒷면 (z = -0.1)
-			box.min.x, box.min.y, -0.1f,
-			box.max.x, box.min.y, -0.1f,
-			box.max.x, box.max.y, -0.1f,
-			box.min.x, box.max.y, -0.1f
+			// 앞면 (z = 0.01)
+			box.min.x, box.min.y, 0.01f,
+			box.max.x, box.min.y, 0.01f,
+			box.max.x, box.max.y, 0.01f,
+			box.min.x, box.max.y, 0.01f,
+			// 뒷면 (z = -0.01)
+			box.min.x, box.min.y, -0.01f,
+			box.max.x, box.min.y, -0.01f,
+			box.max.x, box.max.y, -0.01f,
+			box.min.x, box.max.y, -0.01f
 		};
 		
 		// 라인 인덱스 (박스의 12개 모서리)
@@ -247,7 +248,7 @@ bool Bullet::collide(const glm::mat4& view, const glm::mat4& proj, Player& playe
 	glm::mat4 playerModelMatrix = glm::mat4(1.0f);
 	playerModelMatrix = glm::translate(playerModelMatrix, playerPosWorld);
 	playerModelMatrix = glm::scale(playerModelMatrix, playerScale);
-	playerModelMatrix = glm::rotate(playerModelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // x축 기준 90도 회전
+	playerModelMatrix = glm::rotate(playerModelMatrix, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // x축 기준 90도 회전
 	
 	// 바운딩 박스들 가져오기
 	auto boundingBoxes = player.getBoundingBoxes();
