@@ -121,6 +121,21 @@ public:
 	int getRightKeyDown() const { return right_keydown; }
 	int getUpKeyDown() const { return up_keydown; }
 	int getDownKeyDown() const { return down_keydown; }
+	
+	// 바운딩 박스 정보 반환 (모델링 좌표계)
+	// 3개의 바운딩 박스: 하단, 중단, 상단
+	struct BoundingBox {
+		glm::vec2 min; // (x_min, y_min)
+		glm::vec2 max; // (x_max, y_max)
+	};
+	
+	std::vector<BoundingBox> getBoundingBoxes() const {
+		return {
+			{{-0.189f, -2.768519f}, {0.189f, 1.6254f}},   // 하단 박스 -1.6254 m
+			{{-4.250f, 0.247049f}, {4.250f, 2.768519f}},     // 중단 박스
+			{{-3.591f, 2.768519f}, {3.591f, 4.215462f}}      // 상단 박스
+		};
+	}
 };
 
 
@@ -152,6 +167,6 @@ public:
 	void render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vector<float>& vertices) override;
 	void update_first_paze(float deltaTime);
 	void update_second_paze(float deltaTime);
-	bool collide(const glm::mat4& view, const glm::mat4& proj, glm::vec3& playerpos);
+	bool collide(const glm::mat4& view, const glm::mat4& proj, Player& player);
 };
 

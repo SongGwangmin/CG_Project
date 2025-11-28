@@ -67,8 +67,7 @@ void collidecheck()
 
 	for (auto it = bullets.begin(); it != bullets.end(); )
 	{
-		glm::vec3 pos = player.getPosition();
-		if (it->collide(vTransform, pTransform, pos)) 
+		if (it->collide(vTransform, pTransform, player)) 
 		{
 			// 충돌 시 처리 
 			player.damaged(10.0f); // 10 데미지 입힘
@@ -262,7 +261,7 @@ void BulletTimer(int value)
 		for (auto& b : bullets)
 		{
 			b.update_first_paze(deltaTime);
-			b.collide(vTransform, pTransform, ppos);
+			b.collide(vTransform, pTransform, player);
 		}
 	}
 	else if (currentStage == 2)
@@ -277,9 +276,9 @@ void BulletTimer(int value)
 		// 여기에 1,2페이즈에 사용할 타이머 기능 구현
 		for (auto& b : bullets)
 		{
-			b.update_second_paze(deltaTime);
+			//b.update_second_paze(deltaTime);
 			
-			b.collide(vTransform, pTransform, ppos);
+			b.collide(vTransform, pTransform, player);
 		}
 	}
 	else
@@ -297,7 +296,7 @@ void BulletTimer(int value)
 		for (auto& b : bullets)
 		{
 
-			if (b.collide(vTransform, pTransform, ppos))
+			if (b.collide(vTransform, pTransform, player))
 			{
 				player.damaged(10.0f);   // HP 깎기
 				// 필요하면 총알 지우기

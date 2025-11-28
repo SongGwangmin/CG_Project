@@ -2,6 +2,8 @@
 #include <freeglut.h>
 #include <freeglut_ext.h>
 #include <vector>
+#include <limits>
+#include <algorithm>
 
 #include <iostream>
 
@@ -125,7 +127,7 @@ void Bullet::render(GLuint& shaderProgramID, GLuint& VAO, GLuint& VBO, std::vect
 
 }
 
-bool Bullet::collide(const glm::mat4& view, const glm::mat4& proj, glm::vec3& playerPosWorld)
+bool Bullet::collide(const glm::mat4& view, const glm::mat4& proj, Player& player)
 {
 	// -------------------------------------------------------
 	// 1. 총알 (Bullet) 투영 -> 화면상 영역(타원) 계산
@@ -143,44 +145,90 @@ bool Bullet::collide(const glm::mat4& view, const glm::mat4& proj, glm::vec3& pl
 	float by_ndc = bulletViewPos.y * proj[1][1] / bulletDepth;
 
 	// 총알의 화면상 반지름 (Radius) 계산
-	// scale.x, scale.y가 월드 공간에서의 반지름이라고 가정
 	float b_radius_x_ndc = scale.x * proj[0][0] / bulletDepth / 2;
 	float b_radius_y_ndc = scale.y * proj[1][1] / bulletDepth / 2;
 
-
 	// -------------------------------------------------------
-	// 2. 플레이어 (Player) 투영 -> 화면상 점(Point) 계산
+	// 2. 플레이어 바운딩 박스들을 NDC 좌표로 변환
 	// -------------------------------------------------------
-	glm::vec4 playerPos = glm::vec4(playerPosWorld, 1.0f);
-	glm::vec4 playerViewPos = view * playerPos;
-
-	// 플레이어가 카메라 뒤에 있으면 무시
-	if (playerViewPos.z >= -0.1f) return false;
-
-	float playerDepth = -playerViewPos.z;
-
-	// 플레이어 중심점 NDC 변환 (반지름 계산 불필요)
-	float px_ndc = playerViewPos.x * proj[0][0] / playerDepth;
-	float py_ndc = playerViewPos.y * proj[1][1] / playerDepth;
-
-
+	glm::vec3 playerPosWorld = player.getPosition();
+	glm::vec3 playerScale = player.getScale();
+	
+	// 플레이어의 모델 변환 행렬 계산
+	glm::mat4 playerModelMatrix = glm::mat4(1.0f);
+	playerModelMatrix = glm::translate(playerModelMatrix, playerPosWorld);
+	playerModelMatrix = glm::scale(playerModelMatrix, playerScale);
+	playerModelMatrix = glm::rotate(playerModelMatrix, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // x축 기준 90도 회전
+	
+	// 바운딩 박스들 가져오기
+	auto boundingBoxes = player.getBoundingBoxes();
+	
 	// -------------------------------------------------------
-	// 3. 충돌 검사: 점이 타원 안에 있는가?
+	// 3. 각 바운딩 박스와 충돌 검사
 	// -------------------------------------------------------
-
-	float dx = px_ndc - bx_ndc; // 플레이어 점 - 총알 중심
-	float dy = py_ndc - by_ndc;
-
-	// 타원 방정식: (x / rx)^2 + (y / ry)^2 <= 1
-	// 이 값이 1보다 작거나 같으면 점이 타원 내부에 있는 것입니다.
-
-	float x_term = dx / b_radius_x_ndc;
-	float y_term = dy / b_radius_y_ndc;
-
-	if ((x_term * x_term) + (y_term * y_term) <= 1.0f) 
+	for (const auto& box : boundingBoxes)
 	{
-		std::cout << "Collision detected (Point inside Bullet)!" << std::endl;
-		return true;
+		// 바운딩 박스의 4개 꼭지점을 월드 좌표로 변환
+		glm::vec4 corners[4] = {
+			playerModelMatrix * glm::vec4(box.min.x, box.min.y, 0.0f, 1.0f), // 좌하단
+			playerModelMatrix * glm::vec4(box.max.x, box.min.y, 0.0f, 1.0f), // 우하단
+			playerModelMatrix * glm::vec4(box.min.x, box.max.y, 0.0f, 1.0f), // 좌상단
+			playerModelMatrix * glm::vec4(box.max.x, box.max.y, 0.0f, 1.0f)  // 우상단
+		};
+		
+		// 4개 꼭지점을 NDC로 변환
+		float box_min_x_ndc = std::numeric_limits<float>::max();
+		float box_max_x_ndc = std::numeric_limits<float>::lowest();
+		float box_min_y_ndc = std::numeric_limits<float>::max();
+		float box_max_y_ndc = std::numeric_limits<float>::lowest();
+		
+		bool allBehindCamera = true;
+		
+		for (int i = 0; i < 4; ++i)
+		{
+			glm::vec4 cornerView = view * corners[i];
+			
+			// 카메라 앞에 있는지 확인
+			if (cornerView.z < -0.1f)
+			{
+				allBehindCamera = false;
+				float cornerDepth = -cornerView.z;
+				
+				// NDC 변환
+				float cx_ndc = cornerView.x * proj[0][0] / cornerDepth;
+				float cy_ndc = cornerView.y * proj[1][1] / cornerDepth;
+				
+				// AABB 계산
+				box_min_x_ndc = std::min(box_min_x_ndc, cx_ndc);
+				box_max_x_ndc = std::max(box_max_x_ndc, cx_ndc);
+				box_min_y_ndc = std::min(box_min_y_ndc, cy_ndc);
+				box_max_y_ndc = std::max(box_max_y_ndc, cy_ndc);
+			}
+		}
+		
+		// 모든 꼭지점이 카메라 뒤에 있으면 다음 박스로
+		if (allBehindCamera) continue;
+		
+		// -------------------------------------------------------
+		// 4. 원(타원)과 AABB 충돌 검사
+		// -------------------------------------------------------
+		// 원의 중심에서 박스까지의 가장 가까운 점 찾기
+		float closest_x = std::max(box_min_x_ndc, std::min(bx_ndc, box_max_x_ndc));
+		float closest_y = std::max(box_min_y_ndc, std::min(by_ndc, box_max_y_ndc));
+		
+		// 원의 중심에서 가장 가까운 점까지의 거리 계산 (타원 방정식 적용)
+		float dx = bx_ndc - closest_x;
+		float dy = by_ndc - closest_y;
+		
+		float x_term = dx / b_radius_x_ndc;
+		float y_term = dy / b_radius_y_ndc;
+		
+		// 타원 내부에 가장 가까운 점이 있으면 충돌
+		if ((x_term * x_term) + (y_term * y_term) <= 1.0f)
+		{
+			std::cout << "Collision detected with bounding box!" << std::endl;
+			return true;
+		}
 	}
 
 	return false;
